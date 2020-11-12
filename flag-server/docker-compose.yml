@@ -1,0 +1,37 @@
+version: '3.1'
+
+services:
+    flagchecker_mysql:
+        container_name: flagchecker_mysql
+        networks:
+            - default
+        restart: always
+        image: mysql:5.6
+        environment:
+            - MYSQL_ROOT_PASSWORD=some_super_secret_password_3137
+            - MYSQL_DATABASE=stypr
+            - MYSQL_USER=stypr
+            - MYSQL_PASSWORD=stypr
+        volumes:
+            - ./mysql:/var/lib/mysql
+
+    flagchecker_backend:
+        container_name: flagchecker_web
+        restart: always
+        image: wyveo/nginx-php-fpm:php74
+        depends_on:
+            - flagchecker_mysql
+        networks:
+            - default
+        volumes:
+            - ./web:/usr/share/nginx/html:ro
+        ports:
+            - 0.0.0.0:295:80
+
+networks:
+  default:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+      - subnet: 10.232.232.0/24
