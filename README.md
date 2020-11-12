@@ -76,18 +76,22 @@ Please refer to the each directory for more information.
 ## Known Issues
 
 1. **Reading partial data of the flag will leak the original content of the flag.**
+
    For example,  `head -c68 /flag` will only read the partial data of the flag, leading to the leakage of the original flag.
    Make sure to make that the original value of flag is randomly generated and does not conflict with other flags.
 
 2. **Kernel will crash when you rmmod after insmod multiple times.**
+
    It is better off to reboot the server to remove multiple kernel modules.
    
 3. **Side Channel Attacks**
+
    I haven't verified or succeed on exploiting this bug, but it may be possible that `strstr` is vulnerable to timing attacks.
    (Reported by a person who tested this module during the initial development.)
 
 
 4. **Does not work on latest kernels**
+
    OS that ships with 5.x may not work.
    There seem to be many [workarounds](https://jm33.me/hook-system-calls-in-linux-5x.html) for this but I was not able to succeed on testing it.
    If anyone's interested to fix it, submitting PR would be really helpful.
