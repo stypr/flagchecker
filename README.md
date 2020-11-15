@@ -57,11 +57,9 @@ What flagchecker does is as follows:
 
 This project was tested on a small CTF named [BingoCTF](https://bingo.hypwnlab.com/) sponsored by [Power of Commmunity (POC)](http://powerofcommunity.net/).
 
-During the test, I created an additional server within the instance to gather the flag and and communicate with the scoreboard  server.
+During the test, I created an additional server within the instance to gather the flag and and communicate with the scoreboard server.
 
 ![docker3](docs/docker3.png)
-
-
 
 Having the flagchecker on the same machine made it easier for the scoreboard server to integrate and for organizers to check cheating attempts.
 
@@ -78,7 +76,7 @@ Please refer to the each directory for more information.
 1. **Reading partial data of the flag will leak the original content of the flag.**
 
    For example,  `head -c68 /flag` will only read the partial data of the flag, leading to the leakage of the original flag.
-   Make sure to make that the original value of flag is randomly generated and does not conflict with other flags.
+   Make sure that the original value of flag is randomly generated and does not conflict with other flags.
 
 2. **Kernel will crash when you rmmod after insmod multiple times.**
 
@@ -97,3 +95,22 @@ Please refer to the each directory for more information.
    If anyone's interested to fix it, submitting PR would be really helpful.
 
 
+## Q&A
+
+> What was the result of the test?
+
+Worth checking [here](https://github.com/stypr/flagchecker/tree/main/docs/examples).
+
+We failed to catch direct flag trades but we managed to catch people who broke the rules.
+
+> I've played some challenges but my flag wasn't changing at that time. What happened to those challenges?
+
+We had a lenient code to cover parts that didn't really require LKM. Check out the following code.
+
+https://github.com/stypr/my-ctf-challenges/blob/master/BingoCTF_2020/temporary/internal/index.php#L6-L21
+
+I've added the code to generate the flag but didn't disclose this part while handing out the dist file.
+
+> You said your idea was inspired from the other CTF i.e. CCE. Are you sure they implemented such codes?
+
+It's just an assumption. I have not directly asked organizers how they implemented such behaviors, but I tried to make something similar because it seemed pretty interesting.
