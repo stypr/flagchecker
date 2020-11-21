@@ -1,6 +1,6 @@
 # flagchecker
 
-Effective Cheating Detection for CTFs/competitions. Feel free to submit PR requests.
+Effective Cheating Detection for CTFs/competitions. Feel free to submit PR.
 
 This idea was inspired by the way flags were generated in the Korean domestic CTF contest called [Cyber Conflict Exercise](https://www.cstec.kr/cce2020/).
 
