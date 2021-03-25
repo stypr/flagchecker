@@ -1,14 +1,27 @@
-## Flagchecker Kernel Module
+## Flagchecker LKM
 
 ### Installation
 
-1. You need to first install dependencies. `gcc make linux-headers-$(uname -r) python3 python3-requests python3-pip`
-2. Edit files
-3. Run `./build.sh` on the host machine.
-3. Don't forget to `mv flag.py /root/flag.py`.
+1. Update to the latest kernel and reboot.
+```bash
+$ apt-get -y full-upgrade
+$ reboot
+```
+
+2. Install required dependencies.
+```bash
+$ apt-get install -y gcc make linux-headers-$(uname -r) python3 python3-requests python3-pip
+```
+
+3. Edit files appropriately
+4. Run `./build.sh` on the host machine.
+5. Don't forget to move your flag generator.
+```bash
+$ mv generate_flag.py /root/generate_flag.py
+```
 
 ### Warning
 
-Please use 4.x (Ubuntu 18.04 or lower)
+Please use the stable kernel with a bit lower versions. (Currently tested on Ubuntu 18.04 and lower)
 
 Read the main README.md for known issues.
