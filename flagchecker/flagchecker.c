@@ -21,13 +21,14 @@ MODULE_DESCRIPTION("flagchecker");
 MODULE_LICENSE("GPL");
 MODULE_VERSION("1.4");
 
-// Flag Table. File I/O is discouraged in LKM so we put it directly here
-// https://stackoverflow.com/questions/1184274/read-write-files-within-a-linux-kernel-module
+// TODO: Set the flag table. File I/O is discouraged in LKM so we put values here directly.
+// Reference: https://stackoverflow.com/questions/1184274/read-write-files-within-a-linux-kernel-module
 const char *flag_table[][2] = {
     {"guestbook",   "Bingo{b1d7d0c5b30fe7f8273dd54579cebd9953d903d45ad713c624c05034e7e0f083}"},
     {"example",     "Bingo{d3eb8c2988184fe0f6d4533aa13c91efedb3565f41b639d1109abd79c98be468}"},
     {"stypr_chall", "Bingo{766aba68df48169bf6eacb57a54916d0768be3b1f2f57bf9aa1191174c174831}"},
 };
+
 
 // ftrace hooking stuff starts from here.
 // Derived from https://github.com/ilammy/ftrace-hook
@@ -232,35 +233,30 @@ void generate_flag(char *target, const char *challenge_name){
 }
 
 #ifdef PTREGS_SYSCALL_STUBS
+// Need to call by regs. Ordered based on the calling conventions.
 asmlinkage long (*original_read)(struct pt_regs *regs);
 asmlinkage long hook_read(struct pt_regs *regs){
-    /// : rdi, rsi, rdx, rcx, r8, r9)
     char temp_buf   [256] = {0,};
     char flag_str   [128] = {0,};
     long bufsize, remaining_bufsize;
-
-    // First, use original_read and get buf
     bufsize = original_read(regs);
     remaining_bufsize = copy_from_user(temp_buf, (void*)regs->si, 255);
     for(int i = 0; i < ARRAY_SIZE(flag_table); i++){
         if(strstr(temp_buf, flag_table[i][1]) != NULL){
-            // Search and Replace
             generate_flag(flag_str, flag_table[i][0]);
             str_replace(temp_buf, flag_table[i][1], flag_str);
-            // Replace done? put it back to user level...
             copy_to_user((void*)regs->si, temp_buf, 255 - remaining_bufsize);
             break;
         }
     }
     return bufsize;
 }
-
 #else
 asmlinkage long (*original_read)(unsigned int fd, char __user *buf, size_t count);
 asmlinkage long hook_read(unsigned int fd, char __user *buf, size_t count){
     char temp_buf   [256] = {0,};
     char flag_str   [128] = {0,};
-    long bufsize, remaining_bufsize;
+    long bufsize, remaining_bufsize, failed_bufsize;
 
     // First, use original_read and get buf
     bufsize = original_read(fd, buf, count);

@@ -1,5 +1,5 @@
 KERNEL_PATH ?= /lib/modules/$(shell uname -r)/build
-ccflags-y = -std=gnu99 -fno-pie -Wframe-larger-than=2048
+ccflags-y = -std=gnu99 -fno-pie -Wframe-larger-than=2048 -Wunused-result
 obj-m += flagchecker.o
 
 all:
