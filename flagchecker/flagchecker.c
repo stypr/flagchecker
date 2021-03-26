@@ -7,24 +7,14 @@
 
 #define pr_fmt(fmt) "flagchecker: " fmt
 #include <linux/init.h>
+#include <linux/module.h>
 #include <linux/ftrace.h>
 #include <linux/linkage.h>
 #include <linux/version.h>
-#include <linux/fs.h>
-#include <linux/module.h>
 #include <linux/random.h>
-#include <linux/syscalls.h>
-#include <linux/kallsyms.h>
 #include <linux/slab.h>
 #include <linux/kernel.h>
-#include <linux/kern_levels.h>
-#include <linux/gfp.h>
-#include <linux/fcntl.h>
-#include <asm/unistd.h>
-#include <asm/paravirt.h>
-#include <asm/segment.h>
-#include <asm/uaccess.h>
-#include <linux/buffer_head.h>
+#include <linux/kprobes.h>
 
 MODULE_AUTHOR("stypr <root@stypr.com>");
 MODULE_DESCRIPTION("flagchecker");

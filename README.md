@@ -14,7 +14,7 @@ I decided to create this from the scratch.
 ├── flagchecker: LKM
 │   ├── build.sh: Build LKM
 │   ├── generate_flag.py: Script that logs generated flag to flagserver
-│   ├── main.c: LKM file
+│   ├── flagchecker.c: LKM file
 │   ├── Makefile
 │   ├── README.md
 │   └── test: Test scripts ofr checking the hook
@@ -70,8 +70,6 @@ What flagchecker does is as follows:
 
 ![docker2](docs/docker2.png)
 
-
-
 This project was tested on a small CTF named [BingoCTF](https://bingo.hypwnlab.com/) sponsored by [Power of Commmunity (POC)](http://powerofcommunity.net/).
 
 During the test, I created an additional server within the instance to gather the flag and and communicate with the scoreboard server.
@@ -86,8 +84,6 @@ Having the flagchecker on the same machine made it easier for the scoreboard ser
 
 Please refer to the each directory for more information.
 
-
-
 ## Known Issues
 
 1. **Reading partial data of the flag will leak the original content of the flag.**
@@ -95,22 +91,10 @@ Please refer to the each directory for more information.
    For example,  `head -c68 /flag` will only read the partial data of the flag, leading to the leakage of the original flag.
    Make sure that the original value of flag is randomly generated and does not conflict with other flags.
 
-2. **Kernel will crash when you rmmod after insmod multiple times.**
-
-   It is better off to reboot the server to remove multiple kernel modules.
-   
-3. **Side Channel Attacks**
+2. **Side Channel Attacks**
 
    I haven't verified or succeed on exploiting this bug, but it may be possible that `strstr` is vulnerable to timing attacks.
    (Reported by a person who tested this module during the initial development.)
-
-
-4. **Does not work on latest kernels**
-
-   OS that ships with 5.x may not work.
-   There seem to be many [workarounds](https://jm33.me/hook-system-calls-in-linux-5x.html) for this but I was not able to succeed on testing it.
-   If anyone's interested to fix it, submitting PR would be really helpful.
-
 
 ## Q&A
 
