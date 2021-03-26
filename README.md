@@ -4,7 +4,7 @@ Effective Cheating Detection for CTFs/competitions. Feel free to submit PR.
 
 This idea was inspired by the way flags were generated in the Korean domestic CTF contest called [Cyber Conflict Exercise](https://www.cstec.kr/cce2020/).
 
-I decided to create this from the scratch.
+I decided to create this from the scratch. Moduls were tested in version 4.15, 4.19, 5.8, 5.11.
 
 ## Directory structure
 
