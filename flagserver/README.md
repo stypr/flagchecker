@@ -21,7 +21,7 @@ start.sh
 ```sh
 #!/bin/sh
 
-# Security
+# Keep this as is.
 sysctl -w kernel.dmesg_restrict=1
 
 # Docker cleanup
@@ -30,13 +30,17 @@ docker rm -f $(docker ps -a -q)
 # Build and run challenges
 cd /srv/challenge/example/
 docker-compose down && docker-compose up -d
+cd /srv/challenge/stypr_chall/
+docker-compose down && docker-compose up -d
+cd /srv/challenge/guestbook/
+docker-compose down && docker-compose up -d
 
-# Install flagchecker-kernel-module
-cd /srv/flagchecker/kernel-module/example
+# Install flagchecker LKM
+cd /srv/flagchecker/flagchecker/
 ./build.sh
 
-# Install flagchecker-server
-cd /srv/flagchecker/flag-server/
+# Install flagserver:
+cd /srv/flagchecker/flagserver/
 docker-compose down
 docker-compose up -d
 ```
