@@ -20,7 +20,7 @@ I decided to create this from the scratch.
 │   └── test: Test scripts ofr checking the hook
 │       ├── test-flag2.php
 │       └── test-flag.php
-├── flagserver: Server that manages the generated flag
+├── flagserver: Server to manage the generated flag
 │   ├── docker-compose.yml
 │   ├── README.md
 │   └── web:
