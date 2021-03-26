@@ -2,7 +2,7 @@
 
 /*
 
-WARNING
+!!WARNING!!
 
 You need to manually change the values of ?mode= parameter for production!
 Make sure you know what you're doing. Make sure to check the bottom of this script!
@@ -43,7 +43,7 @@ function generate($ip, $challenge_name, $flag=''){
     global $db;
     if($challenge_name){
         if(!$flag || strlen($flag) >= 73){
-            $flag = "Bingo{" . hash("sha256", "1234bingo" . generateRandomString(32) . "styprzzz4321") . "}";
+            $flag = "Bingo{" . hash("sha256", "1234bingo" . generateRandomString(32) . "stypr1234") . "}";
         }
         $ip = $db->real_escape_string($ip);
         $challenge_name = $db->real_escape_string($challenge_name);
@@ -184,7 +184,6 @@ switch($_GET['mode']){
     case "generate":
         exit(generate($_GET['ip'], $_GET['challenge_name'], $_GET['flag']));
 
-
     // CHANGEME
     // This is for those challenges that integrated this server without the kernel module.
     // We seperated these from kernel modules to reduce the impact when the challenge is solved with an unintended method.
@@ -194,15 +193,13 @@ switch($_GET['mode']){
         }
         exit(generate($_GET['ip'], $_GET['challenge_name'], $_GET['flag']));
 
-
-
     // CHANGEME
-    // This is the mode that needs to be connected with the CTF challenge scoreboard server.
+    // This is the mode that needs to be connected with the CTF scoreboard server.
     case "verify":
         exit(verify($_GET['ip'], $_GET['flag'], $_GET['team_name'], $_GET['challenge_name']));
 
-
     // CHANGEME
+    // This is for administrator to check and review the log.
     case "admin_cheatcheck_all":
         // Checks for all records
         global $db;
@@ -212,9 +209,7 @@ switch($_GET['mode']){
             $flag_dict[$row['flag']] = "<b>" . $row['challenge_name'] . "</b> from " . ($row['ip'] ? $row['ip'] : "(No IP)");
         }
         $cheating_check = $db->query("SELECT * FROM flag_log ORDER BY date DESC");
-
-
-        // Insert template
+        // Insert template and return
         $body = "";
         while($row = $cheating_check->fetch_array()){
     	    $flag_info = @$flag_dict[$row['flag']];
@@ -224,11 +219,9 @@ switch($_GET['mode']){
             $row['comment'] = str_replace("CHEAT", "<b><font color=red>CHEAT</font></b>", htmlspecialchars($row['comment']));
             $body .= "<tr><td>" . $row['date'] . "</td><td>" . htmlspecialchars($row['ip']) . "</td><td>" . htmlspecialchars($row['team_name']) . "</td><td>" . $flag_info . "</td><td>" . $row['comment'] . "</td></tr>";
         }
-
         $template = file_get_contents("template.html");
         $template = str_replace("{{result}}", $body, $template);
         exit($template);
-
 
     default:
         exit();
