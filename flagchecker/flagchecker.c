@@ -16,13 +16,25 @@
 #include <linux/kernel.h>
 #include <linux/kprobes.h>
 
+
 MODULE_AUTHOR("stypr <root@stypr.com>");
 MODULE_DESCRIPTION("flagchecker");
 MODULE_LICENSE("GPL");
 MODULE_VERSION("1.4");
 
-// TODO: Set the flag table. File I/O is discouraged in LKM so we put values here directly.
-// Reference: https://stackoverflow.com/questions/1184274/read-write-files-within-a-linux-kernel-module
+
+/*
+  TODO: Set the flag table.
+
+  File I/O is discouraged in LKM so we put values here directly.
+  Reference: https://stackoverflow.com/questions/1184274/read-write-files-within-a-linux-kernel-module
+
+  Note that the flag format has to be Flag{64digit_alphanumeric}
+
+  The length of the flag can be changed by modifying values from generate_random() and generate_flag(),
+  But it is good to note that the length of the original flag needs to be the same size as
+  the randomly generated flag. Otherwise it can cause a kernel panic or create other sorts of issues.
+*/
 const char *flag_table[][2] = {
     {"guestbook",   "Bingo{b1d7d0c5b30fe7f8273dd54579cebd9953d903d45ad713c624c05034e7e0f083}"},
     {"example",     "Bingo{d3eb8c2988184fe0f6d4533aa13c91efedb3565f41b639d1109abd79c98be468}"},
@@ -57,8 +69,8 @@ static __always_inline struct pt_regs *ftrace_get_regs(struct ftrace_regs *fregs
 }
 #endif
 
-// - detect recusion using function return address (USE_FENTRY_OFFSET = 0)
-// - avoid recusion by jumping over the ftrace call (USE_FENTRY_OFFSET = 1)
+// detect recusion using function return address (USE_FENTRY_OFFSET = 0)
+// avoid recusion by jumping over the ftrace call (USE_FENTRY_OFFSET = 1)
 #define USE_FENTRY_OFFSET 0
 
 struct ftrace_hook {
@@ -186,7 +198,7 @@ void generate_random(char *s) {
 
 // Copied from stackoverflow. I don't want to code it :(
 void str_replace(char *target, const char *needle, const char *replacement){
-    char buffer[1024] = {0,};
+    char buffer [1024] = {0,};
     char *insert_point = &buffer[0];
     const char *tmp = target;
     size_t needle_len = strlen(needle);
@@ -233,35 +245,46 @@ void generate_flag(char *target, const char *challenge_name){
 }
 
 #ifdef PTREGS_SYSCALL_STUBS
+
 // Need to call by regs. Ordered based on the calling conventions.
 asmlinkage long (*original_read)(struct pt_regs *regs);
 asmlinkage long hook_read(struct pt_regs *regs){
     char temp_buf   [256] = {0,};
     char flag_str   [128] = {0,};
     long bufsize, remaining_bufsize;
+
+    // First, use original_read and get buf
     bufsize = original_read(regs);
+
+    // https://www.kernel.org/doc/htmldocs/kernel-api/API---copy-from-user.html
+    // Returns number of bytes that could not be copied. On success, this will be zero.
     remaining_bufsize = copy_from_user(temp_buf, (void*)regs->si, 255);
+
     for(int i = 0; i < ARRAY_SIZE(flag_table); i++){
         if(strstr(temp_buf, flag_table[i][1]) != NULL){
+            // Search and Replace
             generate_flag(flag_str, flag_table[i][0]);
             str_replace(temp_buf, flag_table[i][1], flag_str);
+            // Replace done? put it back to user level...
             copy_to_user((void*)regs->si, temp_buf, 255 - remaining_bufsize);
             break;
         }
     }
     return bufsize;
 }
+
 #else
+
 asmlinkage long (*original_read)(unsigned int fd, char __user *buf, size_t count);
 asmlinkage long hook_read(unsigned int fd, char __user *buf, size_t count){
     char temp_buf   [256] = {0,};
     char flag_str   [128] = {0,};
-    long bufsize, remaining_bufsize, failed_bufsize;
+    long bufsize, remaining_bufsize;
 
     // First, use original_read and get buf
     bufsize = original_read(fd, buf, count);
 
-    // https://www.fsl.cs.sunysb.edu/kernel-api/re257.html
+    // https://www.kernel.org/doc/htmldocs/kernel-api/API---copy-from-user.html
     // Returns number of bytes that could not be copied. On success, this will be zero.
     remaining_bufsize = copy_from_user(temp_buf, buf, 255);
 
@@ -279,11 +302,13 @@ asmlinkage long hook_read(unsigned int fd, char __user *buf, size_t count){
     }
     return bufsize;
 }
+
 #endif
 
 static struct ftrace_hook hook_list[] = {
     HOOK("sys_read",  hook_read,  &original_read),
 };
+
 static int __init start_check(void){
     int err;
     err = fh_install_hooks(hook_list, ARRAY_SIZE(hook_list));
@@ -292,6 +317,7 @@ static int __init start_check(void){
     pr_info("module loaded\n");
     return 0;
 }
+
 static void __exit clean_check(void){
     // Hooks read syscall
     fh_remove_hooks(hook_list, ARRAY_SIZE(hook_list));
