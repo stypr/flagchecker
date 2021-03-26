@@ -6,14 +6,31 @@ This idea was inspired by the way flags were generated in the Korean domestic CT
 
 I decided to create this from the scratch.
 
+## Directory structure
 
-
+```
+.
+├── docs: For documentation
+├── flagchecker: LKM
+│   ├── build.sh: Build LKM
+│   ├── generate_flag.py: Script that logs generated flag to flagserver
+│   ├── main.c: LKM file
+│   ├── Makefile
+│   ├── README.md
+│   └── test: Test scripts ofr checking the hook
+│       ├── test-flag2.php
+│       └── test-flag.php
+├── flagserver: Server that manages the generated flag
+│   ├── docker-compose.yml
+│   ├── README.md
+│   └── web:
+│       └── index.php
+└── README.md
+```	
 
 ## How it works
 
 In many recent CTF competitions, docker has been used for effective competition management such as container isolation and log tracing.
-
-
 
 ![docker image](https://i.stack.imgur.com/ydLN6.png)
 
