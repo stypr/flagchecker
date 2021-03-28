@@ -17,7 +17,7 @@ I decided to create this from the scratch. The module was tested on 4.15, 4.19, 
 │   ├── flagchecker.c: LKM file
 │   ├── Makefile
 │   ├── README.md
-│   └── test: Test scripts ofr checking the hook
+│   └── test: Test scripts for checking the hook
 │       ├── test-flag2.php
 │       └── test-flag.php
 ├── flagserver: Server to manage the generated flag
