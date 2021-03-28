@@ -22,6 +22,5 @@ $ mv generate_flag.py /root/generate_flag.py
 
 ### Warning
 
-Please use the stable kernel with a bit lower versions. (Currently tested on Ubuntu 18.04 and lower)
-
-Read the main README.md for known issues.
+1. MAKE SURE to have `strlen(original_flag) == strlen(modified_flag)`. Review the source code first.
+2. May not work in some systems. Confirmed working on Ubuntu (18.04, 20.04, 21.04) and Debian 10.7
